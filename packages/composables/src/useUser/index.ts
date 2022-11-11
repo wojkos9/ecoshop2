@@ -28,15 +28,14 @@ const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  register: async (context: Context, { email, password, firstName, lastName }) => {
-    console.log('Mocked: useUser.register');
-    return {};
+  register: async (context: Context, params: { email, password, firstName, lastName }) => {
+    const data = await context.$ecoshop.api.createUser(params);
+    return data;
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  logIn: async (context: Context, { username, password }) => {
-    console.log('Mocked: useUser.logIn');
-    return {};
+  logIn: async (context: Context, params: { username, password }) => {
+    return await context.$ecoshop.api.login(params);
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

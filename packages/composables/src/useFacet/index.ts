@@ -10,8 +10,8 @@ import type {
 const factoryParams = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   search: async (context: Context, params: FacetSearchResult<SearchParams>) => {
-    console.log('Mocked: useFacet.search');
-    return {};
+    const data = await context.$ecoshop.api.getFacet(params);
+    return data;
   }
 };
 

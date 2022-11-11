@@ -41,7 +41,26 @@ function getCategoryTree(params: FacetSearchResult<Facet>): AgnosticCategoryTree
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getProducts(params: FacetSearchResult<Facet>): any {
-  return [
+  // return [
+  //   {
+  //     _id: 1,
+  //     _description: 'Some description',
+  //     _categoriesRef: [
+  //       '1',
+  //       '2'
+  //     ],
+  //     name: 'Black jacket',
+  //     sku: 'black-jacket',
+  //     images: [
+  //       'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/081223_1_large.jpg'
+  //     ],
+  //     price: {
+  //       original: 12.34,
+  //       current: 10.00
+  //     }
+  //   }
+  // ];
+  return params.data.map(p => (
     {
       _id: 1,
       _description: 'Some description',
@@ -49,17 +68,14 @@ function getProducts(params: FacetSearchResult<Facet>): any {
         '1',
         '2'
       ],
-      name: 'Black jacket',
+      name: p.name,
       sku: 'black-jacket',
       images: [
         'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/081223_1_large.jpg'
       ],
-      price: {
-        original: 12.34,
-        current: 10.00
-      }
+      price: parseFloat(p.price)
     }
-  ];
+  ));
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

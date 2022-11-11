@@ -14,7 +14,10 @@ export type Category = TODO;
 
 export type Coupon = TODO;
 
-export type Facet = TODO;
+export type Facet = {
+    name: string;
+    price: string;
+}[];
 
 export type FacetSearchCriteria = TODO;
 
@@ -24,7 +27,10 @@ export type OrderItem = TODO;
 
 export type PasswordResetResult = TODO;
 
-export type Product = TODO;
+export type Product = {
+    name: string;
+    price: number;
+};
 
 export type ProductFilter = TODO;
 
