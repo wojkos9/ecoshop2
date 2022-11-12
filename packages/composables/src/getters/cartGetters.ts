@@ -10,14 +10,12 @@ import type { Cart, CartItem } from '@vue-storefront/ecoshop-api';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItems(cart: Cart): CartItem[] {
-  return [
-    {}
-  ];
+  return cart?.products ?? [];
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItemName(item: CartItem): string {
-  return 'Name';
+  return item.name;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -28,14 +26,13 @@ function getItemImage(item: CartItem): string {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItemPrice(item: CartItem): AgnosticPrice {
   return {
-    regular: 12,
-    special: 10
+    regular: item.price
   };
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItemQty(item: CartItem): number {
-  return 1;
+  return item.quantity;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -52,10 +49,11 @@ function getItemSku(item: CartItem): string {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getTotals(cart: Cart): AgnosticTotals {
+  const total = getItems(cart).reduce((p, c) => p + c.price * c.quantity, 0) as number;
   return {
-    total: 12,
-    subtotal: 12,
-    special: 10
+    total,
+    subtotal: total,
+    special: total
   };
 }
 
@@ -66,7 +64,7 @@ function getShippingPrice(cart: Cart): number {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getTotalItems(cart: Cart): number {
-  return 1;
+  return cart?.products?.length || 0;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

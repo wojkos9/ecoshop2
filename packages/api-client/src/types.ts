@@ -15,6 +15,7 @@ export type Category = TODO;
 export type Coupon = TODO;
 
 export type Facet = {
+    id: number;
     name: string;
     price: string;
 }[];

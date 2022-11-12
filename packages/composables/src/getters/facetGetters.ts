@@ -62,7 +62,7 @@ function getProducts(params: FacetSearchResult<Facet>): any {
   // ];
   return params.data.map(p => (
     {
-      _id: 1,
+      id: p.id,
       _description: 'Some description',
       _categoriesRef: [
         '1',

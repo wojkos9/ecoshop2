@@ -1,6 +1,6 @@
 from django.http import JsonResponse
-from .models import Product, Category
-from .serializers import ProductSerializer
+from .models import Product, Category, Cart, CartItem
+from .serializers import ProductSerializer, AddCartSerializer
 from rest_framework.request import Request
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden, HttpResponse, HttpResponseServerError
@@ -14,9 +14,6 @@ def get_facet(q: Request):
     cat = q.query_params.get("cat")
     prods = Product.objects.filter(category__name=cat)
     return JsonResponse(ProductSerializer(prods, many=True).data, safe=False)
-
-def create_cart(q):
-    pass
 
 from dataclasses import dataclass
 
@@ -52,3 +49,49 @@ def login_user(q: Request):
 @permission_classes([IsAuthenticated])
 def get_user(q: Request):
     return HttpResponse(q.user.username)
+
+@api_view(['GET'])
+def create_cart(q: Request):
+    cart = Cart.objects.create()
+    return HttpResponse(cart.id)
+
+def present_cart(cart: Cart):
+    items = CartItem.objects.filter(cart=cart)
+    return {"id": cart.id, "products": [{**ProductSerializer(i.product).data, "quantity": i.quantity} for i in items]}
+
+@api_view(['GET'])
+def get_cart(q: Request):
+    cart_id = q.query_params.get("id")
+    if not cart_id:
+        return HttpResponseForbidden()
+    cart = Cart.objects.filter(id=cart_id).first()
+    if not cart:
+        return HttpResponseForbidden()
+    return JsonResponse(present_cart(cart), safe=False)
+
+@api_view(['POST'])
+def add_to_cart(q: Request):
+    d = q.data
+    ser = AddCartSerializer(data=d)
+    if ser.is_valid():
+        v = ser.validated_data
+        cart = v.get("cart")
+        product: Product = v.get("product")
+        q = v.get("quantity")
+
+        cart_p = CartItem.objects.filter(cart=cart, product=product).first()
+        nq = (q + (cart_p.quantity if cart_p else 0)) if v.get("is_add") else q
+        print(nq, v.get("is_add"))
+        if nq > product.quantity or nq < 0:
+            return HttpResponseForbidden("Too much")
+
+        if not cart_p:
+            CartItem.objects.create(cart=cart, product=product, quantity=nq)
+        elif nq == 0:
+            CartItem.objects.filter(cart=cart, product=product).delete()
+        else:
+            CartItem.objects.filter(cart=cart, product=product).update(quantity=nq)
+        return JsonResponse(present_cart(cart), safe=False)
+    else:
+        print(ser.errors)
+    return HttpResponseForbidden()
