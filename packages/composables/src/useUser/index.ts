@@ -12,13 +12,33 @@ import type {
 const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   load: async (context: Context) => {
-    console.log('Mocked: useUser.load');
-    return {};
+
+    const app = context.$ecoshop.config.app;
+    const appKey = app.$config.appKey;
+    const token = app.$cookies.get(appKey + '_token');
+    const result = await context.$ecoshop.api.fetchCustomer(token);
+    console.log("WKD", "LOAD USER", result);
+    let customer = null;
+    if (result) {
+        customer = result.customer;
+        if (customer) {
+            customer.token = token;
+            customer.isAuthenticated = true;
+        }
+        return customer;
+    }
+    return customer;
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   logOut: async (context: Context) => {
-    console.log('Mocked: useUser.logOut');
+    const app = context.$ecoshop.config.app;
+    const appKey = app.$config.appKey;
+    const token = app.$cookies.get(appKey + '_token');
+    app.$cookies.remove(appKey + '_token');
+    // await context.$ecoshop.api.signOut(token).then(() => {
+    //     app.$cookies.remove(appKey + '_token');
+    // });
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -35,7 +55,13 @@ const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   logIn: async (context: Context, params: { username, password }) => {
-    return await context.$ecoshop.api.login(params);
+    const response = await context.$ecoshop.api.login(params);
+    if (response.token !== null) {
+      const app = context.$ecoshop.config.app;
+      const appKey = app.$config.appKey;
+      app.$cookies.set(appKey + '_token', response.token);
+    }
+    return {};
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

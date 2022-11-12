@@ -4,8 +4,9 @@ from .serializers import ProductSerializer
 from rest_framework.request import Request
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden, HttpResponse, HttpResponseServerError
+from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import authenticate, login
 
 @api_view(['GET'])
@@ -46,3 +47,8 @@ def login_user(q: Request):
         return HttpResponse("OK")
     else:
         return HttpResponseForbidden()
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user(q: Request):
+    return HttpResponse(q.user.username)
