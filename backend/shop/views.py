@@ -99,7 +99,8 @@ def add_to_cart(q: Request):
 @api_view(['GET'])
 def search_product(q: Request):
     term = q.query_params.get("term")
-    if not term:
-        return HttpResponseForbidden()
-    prods = Product.objects.filter(name__icontains=term)
-    return JsonResponse({"products": ProductSerializer(prods, many=True).data}, safe=False)
+    products = []
+    if term:
+        matches = Product.objects.filter(name__icontains=term)
+        products = ProductSerializer(matches, many=True).data
+    return JsonResponse({"products": products}, safe=False)
