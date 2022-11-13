@@ -106,7 +106,7 @@
 <script>
 import { SfHeader, SfImage, SfIcon, SfButton, SfBadge, SfSearchBar, SfOverlay } from '@storefront-ui/vue';
 import { useUiState } from '~/composables';
-import { useCart, useUser, cartGetters } from '@vue-storefront/ecoshop';
+import { useCart, useUser, cartGetters, useSearch } from '@vue-storefront/ecoshop';
 import { computed, ref, watch, onBeforeUnmount, useRouter } from '@nuxtjs/composition-api';
 import { useUiHelpers } from '~/composables';
 import LocaleSelector from './LocaleSelector';
@@ -139,13 +139,14 @@ export default {
     const router = useRouter();
     const { toggleCartSidebar, toggleWishlistSidebar, toggleLoginModal, isMobileMenuOpen } = useUiState();
     const { setTermForUrl, getFacetsFromURL } = useUiHelpers();
+    const { search: headerSearch, result} = useSearch('header-search');
     const { isAuthenticated } = useUser();
     const { cart } = useCart();
     const term = ref(getFacetsFromURL().phrase);
     const isSearchOpen = ref(false);
     const searchBarRef = ref(null);
-    const result = ref(null);
     const isMobile = ref(mapMobileObserver().isMobile.get());
+    // const result = ref(null);
 
     const cartTotalItems = computed(() => {
       const count = cartGetters.getTotalItems(cart.value);
@@ -179,8 +180,11 @@ export default {
       } else {
         term.value = paramValue.target.value;
       }
-      result.value = mockedSearchProducts;
-
+      // result.value = mockedSearchProducts;
+      console.log("WKD SRC", term.value, result);
+      await headerSearch({
+        term: term.value
+      });
     }, 1000);
 
     const closeOrFocusSearchBar = () => {

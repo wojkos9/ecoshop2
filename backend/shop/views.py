@@ -95,3 +95,11 @@ def add_to_cart(q: Request):
     else:
         print(ser.errors)
     return HttpResponseForbidden()
+
+@api_view(['GET'])
+def search_product(q: Request):
+    term = q.query_params.get("term")
+    if not term:
+        return HttpResponseForbidden()
+    prods = Product.objects.filter(name__icontains=term)
+    return JsonResponse({"products": ProductSerializer(prods, many=True).data}, safe=False)

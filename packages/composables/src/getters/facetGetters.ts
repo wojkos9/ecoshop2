@@ -68,11 +68,9 @@ function getProducts(params: FacetSearchResult<Facet>): any {
         '1',
         '2'
       ],
-      name: p.name,
+      name: p.name + "XD",
       sku: 'black-jacket',
-      images: [
-        'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/081223_1_large.jpg'
-      ],
+      image: p.image,
       price: parseFloat(p.price)
     }
   ));

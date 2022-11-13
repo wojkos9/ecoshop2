@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ["id", "name", "price"]
+        fields = ["id", "name", "price", "image"]
 
 class AddCartSerializer(serializers.Serializer):
     cart = serializers.PrimaryKeyRelatedField(queryset=Cart.objects.all())

@@ -37,7 +37,8 @@ function getGallery(product: Product): AgnosticMediaGalleryItem[] {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getCoverImage(product: Product): string {
-  return 'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/081223_1_large.jpg';
+  console.log("WKD", product);
+  return product?.image ? `http://localhost:8000${product.image}` : "";//'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/081223_1_large.jpg';
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

@@ -9,6 +9,7 @@ export { useMakeOrder } from './useMakeOrder';
 export { useProduct } from './useProduct';
 export { useReview } from './useReview';
 export { useShipping } from './useShipping';
+export { useSearch } from './useSearch';
 export { useShippingProvider } from './useShippingProvider';
 export { useStore } from './useStore';
 export { useUser } from './useUser';

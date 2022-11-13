@@ -48,6 +48,7 @@
                   :link="localePath(`/p/${productGetters.getId(product)}/${productGetters.getSlug(product)}`)"
                   :is-in-wishlist="isInWishlist({ product })"
                   @click:wishlist="!isInWishlist({ product }) ? addItemToWishlist({ product }) : removeProductFromWishlist(product)"
+                  @click:add-to-cart="addToCart({ product, quantity: 1 })"
                 />
               </div>
             </SfScrollable>
@@ -99,7 +100,7 @@ import {
   SfImage
 } from '@storefront-ui/vue';
 import { ref, watch, computed } from '@nuxtjs/composition-api';
-import { useWishlist, wishlistGetters, productGetters } from '@vue-storefront/ecoshop';
+import { useWishlist, wishlistGetters, productGetters, useCart } from '@vue-storefront/ecoshop';
 import { addBasePath } from '@vue-storefront/core';
 
 export default {
@@ -132,6 +133,7 @@ export default {
     const products = computed(() => props.result?.products);
     const categories = computed(() => props.result?.categories);
     const { addItem: addItemToWishlist, isInWishlist, removeItem: removeItemFromWishlist, wishlist } = useWishlist();
+    const { addItem: addItemToCart } = useCart();
 
     watch(() => props.visible, (newVal) => {
       isSearchOpen.value = newVal;
@@ -149,6 +151,14 @@ export default {
       removeItemFromWishlist({ product });
     };
 
+    const addToCart = ({ product, quantity }) => {
+      const { id, sku } = product;
+      addItemToCart({
+        product: { id, sku },
+        quantity
+      });
+    };
+
     return {
       isSearchOpen,
       productGetters,
@@ -157,7 +167,8 @@ export default {
       addItemToWishlist,
       isInWishlist,
       removeProductFromWishlist,
-      addBasePath
+      addBasePath,
+      addToCart
     };
   }
 };
