@@ -68,7 +68,7 @@ function getProducts(params: FacetSearchResult<Facet>): any {
         '1',
         '2'
       ],
-      name: p.name + "XD",
+      name: p.name,
       sku: 'black-jacket',
       image: p.image,
       price: parseFloat(p.price)
@@ -81,7 +81,7 @@ function getPagination(params: FacetSearchResult<Facet>): AgnosticPagination {
   return {
     currentPage: 1,
     totalPages: 1,
-    totalItems: 1,
+    totalItems: params?.data?.length ?? 0,
     itemsPerPage: 10,
     pageOptions: []
   };

@@ -26,6 +26,7 @@ function getPrice(product: Product): AgnosticPrice {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getGallery(product: Product): AgnosticMediaGalleryItem[] {
+  return [];
   return [
     {
       small: 'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/081223_1_large.jpg',
@@ -38,7 +39,7 @@ function getGallery(product: Product): AgnosticMediaGalleryItem[] {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getCoverImage(product: Product): string {
   console.log("WKD", product);
-  return product?.image ? `http://localhost:8000${product.image}` : "";//'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/081223_1_large.jpg';
+  return product?.image ? `http://localhost:8000${product.image}` : "";
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
