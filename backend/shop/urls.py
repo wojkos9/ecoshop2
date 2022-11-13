@@ -9,6 +9,6 @@ urlpatterns = [
     path("getCart", views.get_cart),
     path("addToCart", views.add_to_cart),
     path("searchProduct", views.search_product),
-    path("login/", obtain_auth_token),
+    path("login/", views.CustomAuthToken.as_view()),
     path("user", views.get_user)
 ]

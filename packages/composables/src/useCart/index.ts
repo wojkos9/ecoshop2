@@ -11,9 +11,8 @@ import type {
 
 const params: UseCartFactoryParams<Cart, CartItem, Product> = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  load: async (context: Context, { customQuery }) => {
+  load: async (context: Context, param: { customQuery }) => {
       // check if cart is already initiated
-      console.log("WKD CART LOAD")
       const app = context.$ecoshop.config.app;
       const appKey = app.$config.appKey;
       let existngCartId = app.$cookies.get(appKey + '_cart_id');
@@ -35,6 +34,9 @@ const params: UseCartFactoryParams<Cart, CartItem, Product> = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   addItem: async (context: Context, param: { currentCart, product, quantity, customQuery }) => {
     console.log('Mocked: useCart.addItem', param);
+    if (!param.currentCart) {
+      param.currentCart = await params.load(context);
+    }
     const data = await context.$ecoshop.api.cartAction("update", {...param, is_add: true});
     return JSON.parse(JSON.stringify(data));
   },

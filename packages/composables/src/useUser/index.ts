@@ -3,6 +3,7 @@ import {
   useUserFactory,
   UseUserFactoryParams
 } from '@vue-storefront/core';
+import { useCart } from '../useCart';
 import type { User } from '@vue-storefront/ecoshop-api';
 import type {
   UseUserUpdateParams as UpdateParams,
@@ -10,6 +11,9 @@ import type {
 } from '../types';
 
 const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
+  provide() {
+    return {cart: useCart()};
+  },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   load: async (context: Context) => {
 
@@ -36,6 +40,10 @@ const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
     const appKey = app.$config.appKey;
     const token = app.$cookies.get(appKey + '_token');
     app.$cookies.remove(appKey + '_token');
+    if (token) {
+      context.cart.setCart(undefined);
+      app.$cookies.remove(appKey + '_cart_id');
+    }
     // await context.$ecoshop.api.signOut(token).then(() => {
     //     app.$cookies.remove(appKey + '_token');
     // });
@@ -54,12 +62,21 @@ const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  logIn: async (context: Context, params: { username, password }) => {
-    const response = await context.$ecoshop.api.login(params);
+  logIn: async (context: Context, { username, password }) => {
+    const app = context.$ecoshop.config.app;
+    const appKey = app.$config.appKey;
+    const currentCart = app.$cookies.get(appKey + "_cart_id") || undefined;
+    const response = await context.$ecoshop.api.login({
+      username,
+      password,
+      currentCart
+    });
     if (response.token !== null) {
-      const app = context.$ecoshop.config.app;
-      const appKey = app.$config.appKey;
       app.$cookies.set(appKey + '_token', response.token);
+      if (response.cart) {
+        app.$cookies.set(appKey + "_cart_id", response.cart.id);
+        context.cart.setCart(response.cart);
+      }
     }
     return {};
   },

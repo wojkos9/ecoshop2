@@ -8,6 +8,9 @@ from rest_framework.permissions import IsAuthenticated
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import authenticate, login
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
 
 @api_view(['GET'])
 def get_facet(q: Request):
@@ -104,3 +107,43 @@ def search_product(q: Request):
         matches = Product.objects.filter(name__icontains=term)
         products = ProductSerializer(matches, many=True).data
     return JsonResponse({"products": products}, safe=False)
+
+def merge_carts(c_from: Cart, c_to: Cart):
+    i_to = CartItem.objects.filter(cart=c_to)
+    for it in c_from.items.all():
+        it: CartItem
+        Cart.objects
+        p_to = i_to.filter(product=it.product)
+        check_bounds = lambda q: min(it.product.quantity, q)
+        if p_to.exists():
+            nq = check_bounds(p_to.first().quantity + it.quantity)
+            p_to.update(quantity=nq)
+            it.delete()
+        else:
+            c_from.items.filter(product=it.product).update(cart=c_to)
+    c_from.delete()
+
+class CustomAuthToken(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        cc_id = request.data.get("currentCart")
+        current_cart: Cart = Cart.objects.filter(id=cc_id).first() if cc_id else None
+        cart = Cart.objects.filter(owner=user).first()
+        if cart and current_cart:
+            if cc_id != cart.id:
+                merge_carts(current_cart, cart)
+        elif current_cart:
+            current_cart.owner = user
+            current_cart.save()
+        token, created = Token.objects.get_or_create(user=user)
+        resp_data = {
+            'token': token.key,
+            'email': user.email
+        }
+        if cart:
+            resp_data["cart"] = present_cart(cart)
+        return Response(resp_data)
