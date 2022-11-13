@@ -8,7 +8,7 @@
       <!-- TODO: add mobile view buttons after SFUI team PR -->
       <template #logo>
         <nuxt-link :to="localePath({ name: 'home' })" class="sf-header__logo">
-          <SfImage :src="addBasePath('/icons/logo.svg')" alt="Vue Storefront Next" class="sf-header__logo-image"/>
+          <SfImage :src="addBasePath('/icons/logo.png')" alt="Vue Storefront Next" class="sf-header__logo-image"/>
         </nuxt-link>
       </template>
       <template #navigation>
@@ -166,10 +166,6 @@ export default {
     };
 
     const closeSearch = () => {
-      const wishlistClassName = 'sf-product-card__wishlist-icon';
-      const isWishlistIconClicked = event.path.find(p => wishlistClassName.search(p.className) > 0);
-      if (isWishlistIconClicked || !isSearchOpen.value) return;
-
       term.value = '';
       isSearchOpen.value = false;
     };

@@ -32,48 +32,6 @@
     </LazyHydrate>
 
     <LazyHydrate when-visible>
-      <div class="similar-products">
-        <SfHeading title="Match with it" :level="2"/>
-        <nuxt-link :to="localePath('/c/women')" class="smartphone-only">
-          {{ $t('See all') }}
-        </nuxt-link>
-      </div>
-    </LazyHydrate>
-
-    <LazyHydrate when-visible>
-        <SfCarousel class="carousel" :settings="{ peek: 16, breakpoints: { 1023: { peek: 0, perView: 2 } } }">
-          <template #prev="{go}">
-            <SfArrow
-              aria-label="prev"
-              class="sf-arrow--left sf-arrow--long"
-              @click="go('prev')"
-            />
-          </template>
-          <template #next="{go}">
-            <SfArrow
-              aria-label="next"
-              class="sf-arrow--right sf-arrow--long"
-              @click="go('next')"
-            />
-          </template>
-          <SfCarouselItem class="carousel__item" v-for="(product, i) in products" :key="i">
-            <SfProductCard
-              :title="product.title"
-              :image="product.image"
-              :regular-price="product.price.regular"
-              :max-rating="product.rating.max"
-              :score-rating="product.rating.score"
-              :show-add-to-cart-button="true"
-              :is-on-wishlist="product.isInWishlist"
-              :link="localePath({ name: 'home' })"
-              class="carousel__item__product"
-              @click:wishlist="toggleWishlist(i)"
-            />
-          </SfCarouselItem>
-        </SfCarousel>
-    </LazyHydrate>
-
-    <LazyHydrate when-visible>
       <SfCallToAction
         title="Subscribe to Newsletters"
         button-text="Subscribe"
@@ -92,15 +50,6 @@
         </template>
       </SfCallToAction>
     </LazyHydrate>
-
-    <LazyHydrate when-visible>
-      <NewsletterModal @email-submitted="onSubscribe" />
-    </LazyHydrate>
-
-    <LazyHydrate when-visible>
-      <InstagramFeed />
-    </LazyHydrate>
-
   </div>
 </template>
 <script>
@@ -203,70 +152,82 @@ export default {
         isInWishlist: false
       }
     ]);
-    const heroes = [
+    const heroes =  [
       {
-        title: 'Colorful summer dresses are already in store',
-        subtitle: 'SUMMER COLLECTION 2019',
+        title: '🍉🍉🍉🍉 Watermelon',
+        subtitle: 'SUMMER COLLECTION 2022',
+        buttonText: 'Learn more',
         background: '#eceff1',
-        image: addBasePath('/homepage/bannerH.webp')
+        image: {
+          desktop:
+            '/homepage/goodmelon.jpg'
+        },
+        link: '/c/women/women-clothing-shirts'
       },
       {
-        title: 'Colorful summer dresses are already in store',
-        subtitle: 'SUMMER COLLECTION 2019',
-        background: '#efebe9',
-        image: addBasePath('/homepage/bannerA.webp'),
-        className:
-          'sf-hero-item--position-bg-top-left sf-hero-item--align-right'
+        title: 'Paprika 🫑',
+        subtitle: 'SUMMER COLLECTION 2022',
+        buttonText: 'Learn more',
+        background: '#eceff1',
+        image: {
+          desktop:
+            '/homepage/pepper.jpg'
+        },
+        link: '/c/women/women-clothing-shirts'
       },
-      {
-        title: 'Colorful summer dresses are already in store',
-        subtitle: 'SUMMER COLLECTION 2019',
-        background: '#fce4ec',
-        image: addBasePath('/homepage/bannerB.webp')
-      }
     ];
     const banners = [
-      {
-        slot: 'banner-A',
-        subtitle: 'Dresses',
-        title: 'Cocktail & Party',
-        description:
-          'Find stunning women\'s cocktail dresses and party dresses. Stand out in lace and metallic cocktail dresses from all your favorite brands.',
-        buttonText: 'Shop now',
-        image: {
-          mobile: addBasePath($config.theme.home.bannerA.image.mobile),
-          desktop: addBasePath($config.theme.home.bannerA.image.desktop)
+    {
+          slot: 'banner-A',
+          subtitle: 'Fruit cocktails',
+          title: 'Cocktail & Party',
+          buttonText: 'Shop now',
+          image: {
+            desktop:
+              '/homepage/cocktail.jpg'
+          },
+          class: 'sf-banner--slim desktop-only banner__light',
+          link: '/c/fruit',
         },
-        class: 'sf-banner--slim desktop-only',
-        link: $config.theme.home.bannerA.link
-      },
-      {
-        slot: 'banner-B',
-        subtitle: 'Dresses',
-        title: 'Linen Dresses',
-        description:
-          'Find stunning women\'s cocktail dresses and party dresses. Stand out in lace and metallic cocktail dresses from all your favorite brands.',
-        buttonText: 'Shop now',
-        image: addBasePath($config.theme.home.bannerB.image),
-        class: 'sf-banner--slim banner-central desktop-only',
-        link: $config.theme.home.bannerB.link
-      },
-      {
-        slot: 'banner-C',
-        subtitle: 'T-Shirts',
-        title: 'The Office Life',
-        image: addBasePath($config.theme.home.bannerC.image),
-        class: 'sf-banner--slim banner__tshirt',
-        link: $config.theme.home.bannerC.link
-      },
-      {
-        slot: 'banner-D',
-        subtitle: 'Summer Sandals',
-        title: 'Eco Sandals',
-        image: addBasePath($config.theme.home.bannerD.image),
-        class: 'sf-banner--slim',
-        link: $config.theme.home.bannerD.link
-      }
+        {
+          slot: 'banner-B',
+          subtitle: 'Tea',
+          title: 'Heavenly Tea',
+          description:
+            'Tea so good you will ascend',
+          buttonText: 'Shop now',
+          image: {
+            desktop:
+              '/homepage/tea.png'
+          },
+          class: 'sf-banner--slim banner-central desktop-only banner__light',
+          link: '/c/tea'
+        },
+        {
+          slot: 'banner-C',
+          subtitle: 'Coffee',
+          title: 'Frog recommends',
+          buttonText: 'Buy coffee',
+          image: {
+            desktop:
+              '/homepage/coffefrog.png'
+          },
+          class: 'sf-banner--slim--font-weight-light banner__light',
+          link: '/c/coffee'
+        },
+        {
+          slot: 'banner-D',
+          subtitle: 'Summer Sandals',
+          title: 'Eco Sandals',
+          image: {
+            mobile:
+              'https://cdn.shopify.com/s/files/1/0407/1902/4288/files/bannerG_328x343.jpg',
+            desktop:
+              'https://cdn.shopify.com/s/files/1/0407/1902/4288/files/bannerG_332x400.jpg'
+          },
+          class: 'sf-banner--slim c-white',
+          link: '/c/vegetables'
+        }
     ];
 
     const onSubscribe = (emailAddress) => {
@@ -345,8 +306,10 @@ export default {
 }
 
 .banner {
-  &__tshirt {
-    background-position: left;
+  &__light {
+    --banner-title-color: var(--c-white);
+    --banner-subtitle-color: var(--c-light);
+    --banner-description-color: var(--c-white);
   }
   &-central {
     @include for-desktop {
