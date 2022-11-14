@@ -11,8 +11,11 @@ import type {
 const params: UseUserOrderFactoryParams<Order, SearchParams> = {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   searchOrders: async (context: Context, params) => {
-    console.log('Mocked: searchOrders');
-    return {};
+    const app = context.$ecoshop.config.app;
+    const appKey = app.$config.appKey;
+    const token = app.$cookies.get(appKey + '_token');
+    const result = await context.$ecoshop.api.userOrders(token);
+    return {orders: result};
   }
 };
 

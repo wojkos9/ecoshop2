@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from django.db import models
-from .models import Product, Cart
-from django.contrib.auth.models import User
+from .models import Product, Cart, Order
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,9 +12,7 @@ class AddCartSerializer(serializers.Serializer):
     quantity = serializers.IntegerField()
     is_add = serializers.BooleanField(default=False, required=False)
 
-# class UserDataSerializer(serializers.ModelSerializer):
-#     username = serializers.SerializerMethodField(source="email")
-#     first_name = serializers.SerializerMethodField(source="firstName")
-#     class Meta:
-#         model = User
-#         fields = "__all__"
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ["id", "date", "amount", "delivered"]

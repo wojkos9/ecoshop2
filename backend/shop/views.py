@@ -1,6 +1,6 @@
 from django.http import JsonResponse, FileResponse
 from .models import Order, OrderItem, Product, Category, Cart, CartItem
-from .serializers import ProductSerializer, AddCartSerializer
+from .serializers import ProductSerializer, AddCartSerializer, OrderSerializer
 from rest_framework.request import Request
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden, HttpResponse, HttpResponseServerError
@@ -165,7 +165,7 @@ def make_order(q: Request):
     if not_in_stock:
         return HttpResponseForbidden(str(not_in_stock))
 
-    order = Order.objects.create()
+    order = Order.objects.create(owner=cart.owner)
     for it in items:
         q = it.quantity
         it.product.quantity -= q
@@ -195,3 +195,10 @@ def download(q: Request):
     order.delivered = True
     order.save()
     return resp
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_orders(q: Request):
+    if not q.user:
+        return HttpResponseForbidden("Not authorized")
+    return JsonResponse(OrderSerializer(q.user.orders.all(), many=True).data, safe=False)

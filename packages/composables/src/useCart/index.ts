@@ -35,7 +35,7 @@ const params: UseCartFactoryParams<Cart, CartItem, Product> = {
   addItem: async (context: Context, param: { currentCart, product, quantity, customQuery }) => {
     console.log('Mocked: useCart.addItem', param);
     if (!param.currentCart) {
-      param.currentCart = await params.load(context);
+      param.currentCart = await params.load(context, null);
     }
     const data = await context.$ecoshop.api.cartAction("update", {...param, is_add: true});
     return JSON.parse(JSON.stringify(data));

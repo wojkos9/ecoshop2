@@ -23,7 +23,11 @@ export type Facet = {
 export type FacetSearchCriteria = TODO;
 
 export type Order = {
-    id: string;
+    id?: string;
+    amount?: string;
+    date?: string;
+    delivered?: boolean;
+    orders?: Order[];
 };
 
 export type OrderItem = TODO;
@@ -33,6 +37,7 @@ export type PasswordResetResult = TODO;
 export type Product = {
     name: string;
     price: number;
+    image: string;
 };
 
 export type ProductFilter = TODO;

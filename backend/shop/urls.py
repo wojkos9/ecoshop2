@@ -12,5 +12,6 @@ urlpatterns = [
     path("login/", views.CustomAuthToken.as_view()),
     path("user", views.get_user),
     path("makeOrder", views.make_order),
-    path("download", views.download)
+    path("download", views.download),
+    path("userOrders", views.get_orders)
 ]

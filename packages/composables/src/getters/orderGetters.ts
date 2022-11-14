@@ -3,27 +3,27 @@ import type { Order, OrderItem } from '@vue-storefront/ecoshop-api';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getDate(order: Order): string {
-  return '';
+  return order.date;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getId(order: Order): string {
-  return order?.id || "undefined";
+  return order.id;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getStatus(order: Order): string {
-  return '';
+  return order?.delivered ? "Delivered" : "Unknown";
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getPrice(order: Order): number | null {
-  return 0;
+  return order?.amount ? parseFloat(order.amount) : 0;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItems(order: Order): OrderItem[] {
-  return [];
+  return order.orders;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

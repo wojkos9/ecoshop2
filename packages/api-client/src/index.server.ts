@@ -9,6 +9,7 @@ import { fetchCustomer } from './api/fetchCustomer';
 import { cartAction } from './api/cart';
 import { searchProduct } from './api/searchProduct';
 import { makeOrder } from './api/makeOrder';
+import { userOrders } from './api/userOrders';
 
 const init = (settings) => {
   const client = axios.create({
@@ -43,7 +44,8 @@ const { createApiClient } = apiClientFactory<Setttings, Endpoints>({
     fetchCustomer,
     cartAction,
     searchProduct,
-    makeOrder
+    makeOrder,
+    userOrders
   }
 });
 
