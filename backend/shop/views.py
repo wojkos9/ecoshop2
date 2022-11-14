@@ -1,5 +1,5 @@
-from django.http import JsonResponse
-from .models import Product, Category, Cart, CartItem
+from django.http import JsonResponse, FileResponse
+from .models import Order, OrderItem, Product, Category, Cart, CartItem
 from .serializers import ProductSerializer, AddCartSerializer
 from rest_framework.request import Request
 from django.contrib.auth.models import User
@@ -11,6 +11,7 @@ from django.contrib.auth import authenticate, login
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
+import os
 
 @api_view(['GET'])
 def get_facet(q: Request):
@@ -147,3 +148,50 @@ class CustomAuthToken(ObtainAuthToken):
         if cart:
             resp_data["cart"] = present_cart(cart)
         return Response(resp_data)
+
+def sanitize_name(name: str):
+    return name.lower().replace(" ", "_")
+
+import io
+import zipfile
+@api_view(['GET'])
+def make_order(q: Request):
+    not_in_stock = []
+    cart = Cart.objects.filter(id=q.query_params.get("cart")).first()
+    items = CartItem.objects.filter(cart=cart).all()
+    for it in items:
+        if not 0 < it.quantity <= it.product.quantity:
+            not_in_stock.append(it.product.name)
+    if not_in_stock:
+        return HttpResponseForbidden(str(not_in_stock))
+
+    order = Order.objects.create()
+    for it in items:
+        q = it.quantity
+        it.product.quantity -= q
+        it.product.save()
+        OrderItem.objects.create(order=order, product=it.product, quantity=it.quantity)
+        it.delete()
+
+    return JsonResponse({"order": order.id})
+
+@api_view(['GET'])
+def download(q: Request):
+    order = Order.objects.filter(id=q.query_params.get("order")).first()
+    if order.delivered:
+        return HttpResponseForbidden("Order delivered")
+    buf = io.BytesIO()
+    z = zipfile.ZipFile(buf, "w")
+    for it in order.items.all():
+        for i in range(1, it.quantity+1):
+            p = it.product
+            _, ext = os.path.splitext(p.image.path)
+            z.write(p.image.path, f"{sanitize_name(p.name)}_{i}{ext}")
+
+    z.close()
+    buf.seek(0)
+
+    resp = FileResponse(buf, as_attachment=True, filename=f"order_{order.id}.zip")
+    order.delivered = True
+    order.save()
+    return resp

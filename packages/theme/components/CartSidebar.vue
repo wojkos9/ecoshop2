@@ -88,7 +88,7 @@
                 />
               </template>
             </SfProperty>
-            <nuxt-link :to="localePath({ name: 'shipping' })">
+            <nuxt-link :to="localePath({ name: 'payment' })">
               <SfButton
                 class="sf-button--full-width color-secondary"
                 @click="toggleCartSidebar"

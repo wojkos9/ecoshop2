@@ -177,7 +177,6 @@ export default {
         term.value = paramValue.target.value;
       }
       // result.value = mockedSearchProducts;
-      console.log("WKD SRC", term.value, result);
       await headerSearch({
         term: term.value
       });

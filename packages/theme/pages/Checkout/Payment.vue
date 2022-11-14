@@ -75,13 +75,6 @@
 
         <div v-e2e="'payment-summary-buttons'" class="summary__action">
           <SfButton
-            type="button"
-            class="sf-button color-secondary summary__back-button"
-            @click="router.push('/checkout/billing')"
-          >
-            {{ $t('Go back') }}
-          </SfButton>
-          <SfButton
             :disabled="loading || !isPaymentReady || !terms"
             class="summary__action-button"
             @click="processOrder"
@@ -145,6 +138,7 @@ export default {
       await make();
       const thankYouPath = { name: 'thank-you', query: { order: orderGetters.getId(order.value) }};
       router.push(context.root.localePath(thankYouPath));
+      window.location = `http://localhost:8000/api/download?order=${order.value.id}`
       setCart(null);
     };
 

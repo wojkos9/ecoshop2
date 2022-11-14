@@ -22,9 +22,6 @@
         v-if="!isThankYou"
         class="checkout__aside desktop-only"
       >
-        <transition name="fade">
-          <CartPreview key="order-summary" />
-        </transition>
       </div>
     </div>
   </div>
@@ -36,8 +33,6 @@ import CartPreview from '~/components/Checkout/CartPreview';
 import { computed, useRoute, useRouter } from '@nuxtjs/composition-api';
 
 const STEPS = {
-  shipping: 'Shipping',
-  billing: 'Billing',
   payment: 'Payment'
 };
 

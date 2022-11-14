@@ -22,7 +22,9 @@ export type Facet = {
 
 export type FacetSearchCriteria = TODO;
 
-export type Order = TODO;
+export type Order = {
+    id: string;
+};
 
 export type OrderItem = TODO;
 

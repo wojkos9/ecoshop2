@@ -9,12 +9,6 @@
         desktop: addBasePath('/thankyou/bannerD.png'),
       }"
     >
-      <template #description>
-        <div class="banner__order-number">
-          <span>{{ $t('Order No.') }}</span>
-          <strong>{{ orderNumber }}</strong>
-        </div>
-      </template>
     </SfCallToAction>
     <section class="section">
       <div class="order">
@@ -96,12 +90,11 @@ export default {
       city: 'Wroclaw, Poland',
       email: 'demo@vuestorefront.io'
     });
-    const orderNumber = ref('80932031-030-00');
+    console.log("WKD", context);
 
     return {
       addBasePath,
-      companyDetails,
-      orderNumber
+      companyDetails
     };
   }
 };

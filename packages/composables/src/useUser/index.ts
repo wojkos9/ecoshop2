@@ -21,7 +21,6 @@ const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
     const appKey = app.$config.appKey;
     const token = app.$cookies.get(appKey + '_token');
     const result = await context.$ecoshop.api.fetchCustomer(token);
-    console.log("WKD", "LOAD USER", result);
     let customer = null;
     if (result) {
         customer = result.customer;
