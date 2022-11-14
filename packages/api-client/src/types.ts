@@ -6,9 +6,16 @@ export type Endpoints = TODO;
 
 export type BillingAddress = TODO;
 
-export type Cart = TODO;
+export type Cart = {
+    products: CartItem[]
+};
 
-export type CartItem = TODO;
+export type CartItem = {
+    name: string;
+    price: number;
+    quantity: number;
+    image: string;
+};
 
 export type Category = TODO;
 
@@ -18,6 +25,7 @@ export type Facet = {
     id: number;
     name: string;
     price: string;
+    image: string;
 }[];
 
 export type FacetSearchCriteria = TODO;

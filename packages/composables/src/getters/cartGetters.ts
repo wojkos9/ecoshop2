@@ -21,7 +21,7 @@ function getItemName(item: CartItem): string {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getItemImage(item: CartItem): string {
-  return productGetters.getCoverImage(item as Product);//;'https://s3-eu-west-1.amazonaws.com/commercetools-maximilian/products/081223_1_large.jpg';
+  return item.image;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
