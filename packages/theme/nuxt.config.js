@@ -148,7 +148,8 @@ export default {
     middleware: ['checkout']
   },
   publicRuntimeConfig: {
-    theme
+    theme,
+    middlewareUrl:  `https://${process.env.BASE_URL}/api/`
   },
   pwa: {
     meta: {

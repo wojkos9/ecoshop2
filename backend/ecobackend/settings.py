@@ -137,3 +137,5 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ]
 }
+
+CSRF_TRUSTED_ORIGINS = ["https://ecoshop.local"]

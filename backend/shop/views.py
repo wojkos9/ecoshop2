@@ -165,13 +165,17 @@ def make_order(q: Request):
     if not_in_stock:
         return HttpResponseForbidden(str(not_in_stock))
 
-    order = Order.objects.create(owner=cart.owner)
+    order = Order.objects.create(owner=cart.owner, amount=0)
+    amount = 0
     for it in items:
         q = it.quantity
         it.product.quantity -= q
         it.product.save()
         OrderItem.objects.create(order=order, product=it.product, quantity=it.quantity)
+        amount += it.product.price * it.quantity
         it.delete()
+    order.amount = amount
+    order.save()
 
     return JsonResponse({"order": order.id})
 
