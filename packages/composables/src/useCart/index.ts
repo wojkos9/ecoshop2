@@ -10,6 +10,11 @@ import type {
 } from '@vue-storefront/ecoshop-api';
 
 const params: UseCartFactoryParams<Cart, CartItem, Product> = {
+  provide(context: Context) {
+    const app = context.$ecoshop.config.app;
+    const appKey = app.$config.appKey;
+    return {getToken() { return app.$cookies.get(appKey + '_token');}};
+  },
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   load: async (context: Context, param: { customQuery }) => {
       // check if cart is already initiated
@@ -18,12 +23,11 @@ const params: UseCartFactoryParams<Cart, CartItem, Product> = {
       let existngCartId = app.$cookies.get(appKey + '_cart_id');
       if ((existngCartId === undefined || existngCartId === '')) {
           // Initiate new cart
-          existngCartId = await context.$ecoshop.api.cartAction("create").then((checkout) => {
+          existngCartId = await context.$ecoshop.api.cartAction("create", {token: context.getToken()}).then((checkout) => {
               app.$cookies.set(appKey + '_cart_id', checkout.id, { maxAge: 60 * 60 * 24 * 365, path: '/' });
               return checkout.id;
           });
       }
-      const checkoutId = existngCartId;
       // Keep existing cart
       const plainResp = await context.$ecoshop.api.cartAction("get", {currentCart: existngCartId}).then((checkout) => {
           // Do something with the checkout
@@ -37,20 +41,26 @@ const params: UseCartFactoryParams<Cart, CartItem, Product> = {
     if (!param.currentCart) {
       param.currentCart = await params.load(context, null);
     }
-    const data = await context.$ecoshop.api.cartAction("update", {...param, is_add: true});
+    const data = await context.$ecoshop.api.cartAction("update", {...param, token: context.getToken(), is_add: true});
+    if (data.error) {
+      throw data.error;
+    }
     return JSON.parse(JSON.stringify(data));
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   removeItem: async (context: Context, param: { currentCart, product, customQuery }) => {
-    const data = await context.$ecoshop.api.cartAction("update", {...param, quantity: 0});
+    const data = await context.$ecoshop.api.cartAction("update", {...param, token: context.getToken(), quantity: 0});
     return JSON.parse(JSON.stringify(data));
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   updateItemQty: async (context: Context, param: { currentCart, product, quantity, customQuery }) => {
     console.log('Mocked: useCart.updateItemQty', param);
-    const data = await context.$ecoshop.api.cartAction("update", param);
+    const data = await context.$ecoshop.api.cartAction("update", {...param, token: context.getToken()});
+    if (data.error) {
+      throw data.error;
+    }
     return JSON.parse(JSON.stringify(data));
   },
 

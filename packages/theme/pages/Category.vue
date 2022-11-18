@@ -98,7 +98,6 @@
               :show-add-to-cart-button="true"
               :is-in-wishlist="isInWishlist({ product })"
               :is-added-to-cart="isInCart({ product })"
-              :link="localePath(`/p/${productGetters.getId(product)}/${productGetters.getSlug(product)}`)"
               class="products__product-card"
               @click:wishlist="!isInWishlist({ product }) ? addItemToWishlist({ product }) : removeProductFromWishlist(product)"
               @click:add-to-cart="addToCart({ product, quantity: 1 })"
@@ -126,7 +125,6 @@
               :score-rating="3"
               :qty="1"
               :is-in-wishlist="isInWishlist({ product })"
-              :link="localePath(`/p/${productGetters.getId(product)}/${productGetters.getSlug(product)}`)"
               @input="productsQuantity[product._id] = $event"
               @click:wishlist="!isInWishlist({ product }) ? addItemToWishlist({ product }) : removeProductFromWishlist(product)"
               @click:add-to-cart="addToCart({ product, quantity: Number(productsQuantity[product._id]) })"
@@ -212,7 +210,7 @@ import {
 } from '@storefront-ui/vue';
 import { computed, ref } from '@nuxtjs/composition-api';
 import { useCart, useWishlist, productGetters, useFacet, facetGetters, wishlistGetters } from '@vue-storefront/ecoshop';
-import { useUiHelpers, useUiState } from '~/composables';
+import { useUiHelpers, useUiNotification, useUiState } from '~/composables';
 import { onSSR } from '@vue-storefront/core';
 import LazyHydrate from 'vue-lazy-hydration';
 import CategoryPageHeader from '~/components/CategoryPageHeader';
@@ -224,9 +222,10 @@ export default {
   setup(props, context) {
     const th = useUiHelpers();
     const uiState = useUiState();
-    const { addItem: addItemToCart, isInCart } = useCart();
+    const { addItem: addItemToCart, isInCart, error: cartError } = useCart();
     const { result, search, loading, error } = useFacet();
     const { addItem: addItemToWishlist, isInWishlist, removeItem: removeItemFromWishlist, wishlist } = useWishlist();
+    const { send: sendNotification} = useUiNotification();
 
     const productsQuantity = ref({});
     const products = computed(() => facetGetters.getProducts(result.value));
@@ -251,12 +250,17 @@ export default {
       removeItemFromWishlist({ product });
     };
 
-    const addToCart = ({ product, quantity }) => {
+    const addToCart = async ({ product, quantity }) => {
       const { id, sku } = product;
-      addItemToCart({
+      await addItemToCart({
         product: { id, sku },
         quantity
       });
+      if (cartError.value.addItem) {
+        sendNotification({type: "danger", message: "Cannot add to cart"});
+      } else {
+        sendNotification({type: "success", message: "Added to cart"});
+      }
     };
 
     onSSR(async () => {

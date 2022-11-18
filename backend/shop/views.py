@@ -1,3 +1,4 @@
+from django.forms import ValidationError
 from django.http import JsonResponse, FileResponse
 from .models import Order, OrderItem, Product, Category, Cart, CartItem
 from .serializers import ProductSerializer, AddCartSerializer, OrderSerializer
@@ -28,26 +29,30 @@ class UserData:
     firstName: str
     lastName: str
 
+from django.contrib.auth.password_validation import validate_password
+
 @api_view(['POST'])
 def create_user(q: Request):
     d = q.data
     u = UserData(d.get("email"), d.get("password"), d.get("firstName"), d.get("lastName"))
     if User.objects.filter(email=u.email).exists():
-        return HttpResponseForbidden()
+        return HttpResponseForbidden("User with given email already exists")
     else:
         user = User.objects.create_user(u.email, u.email, u.password, first_name=u.firstName, last_name=u.lastName)
+        try:
+            validate_password(u.password, user)
+        except ValidationError as e:
+            user.delete()
+            print()
+            return HttpResponseForbidden(e)
         user.save()
-        return HttpResponse("OK")
-
-@api_view(['POST'])
-def login_user(q: Request):
-    d = q.data
-    user = authenticate(q, username=d.get("username"), password=d.get("password"))
-    if user is not None:
-        login(q, user)
-        return HttpResponse("OK")
-    else:
-        return HttpResponseForbidden()
+        cc_id = q.data.get("currentCart")
+        current_cart: Cart = Cart.objects.filter(id=cc_id).first() if cc_id else None
+        if current_cart and not current_cart.owner:
+            current_cart.owner = user
+            current_cart.save()
+        token = Token.objects.create(user=user)
+        return JsonResponse({"token": token.key})
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -57,6 +62,9 @@ def get_user(q: Request):
 @api_view(['GET'])
 def create_cart(q: Request):
     cart = Cart.objects.create()
+    if q.user and not q.user.is_anonymous and not Cart.objects.filter(owner=q.user).exists():
+        cart.user = q.user
+        cart.save()
     return HttpResponse(cart.id)
 
 def present_cart(cart: Cart):
@@ -74,20 +82,27 @@ def get_cart(q: Request):
     return JsonResponse(present_cart(cart), safe=False)
 
 @api_view(['POST'])
-def add_to_cart(q: Request):
-    d = q.data
+def add_to_cart(request: Request):
+    d = request.data
     ser = AddCartSerializer(data=d)
     if ser.is_valid():
         v = ser.validated_data
-        cart = v.get("cart")
+        cart: Cart = v.get("cart")
         product: Product = v.get("product")
         q = v.get("quantity")
 
+        if cart.owner and cart.owner != request.user:
+            print(cart.owner, request.user)
+            return HttpResponseForbidden("No rights to alter cart")
+
         cart_p = CartItem.objects.filter(cart=cart, product=product).first()
         nq = (q + (cart_p.quantity if cart_p else 0)) if v.get("is_add") else q
-        print(nq, v.get("is_add"))
-        if nq > product.quantity or nq < 0:
-            return HttpResponseForbidden("Too much")
+        message = None
+        if cart_p and cart_p.quantity > nq > product.quantity:
+            nq = product.quantity
+            message = "Product quantity decreased"
+        elif nq > product.quantity or nq < 0:
+            return HttpResponseForbidden("Invalid product quantity")
 
         if not cart_p:
             CartItem.objects.create(cart=cart, product=product, quantity=nq)
@@ -95,7 +110,10 @@ def add_to_cart(q: Request):
             CartItem.objects.filter(cart=cart, product=product).delete()
         else:
             CartItem.objects.filter(cart=cart, product=product).update(quantity=nq)
-        return JsonResponse(present_cart(cart), safe=False)
+        ret = present_cart(cart)
+        if message:
+            ret = {**ret, "message": message}
+        return JsonResponse(ret, safe=False)
     else:
         print(ser.errors)
     return HttpResponseForbidden()

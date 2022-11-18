@@ -138,7 +138,8 @@ export default {
       await make();
       const thankYouPath = { name: 'thank-you', query: { order: orderGetters.getId(order.value) }};
       router.push(context.root.localePath(thankYouPath));
-      window.location = `http://localhost:8000/api/download?order=${order.value.id}`
+      setTimeout(() =>
+        window.location = `/api/download?order=${order.value.id}`, 2000);
       setCart(null);
     };
 

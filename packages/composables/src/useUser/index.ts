@@ -56,8 +56,17 @@ const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   register: async (context: Context, params: { email, password, firstName, lastName }) => {
-    const data = await context.$ecoshop.api.createUser(params);
-    return data;
+    const app = context.$ecoshop.config.app;
+    const appKey = app.$config.appKey;
+    const currentCart = app.$cookies.get(appKey + "_cart_id") || undefined;
+    const data = await context.$ecoshop.api.createUser({...params, currentCart});
+    if (data.error) {
+      throw {message: data.error};
+    } else {
+
+      app.$cookies.set(appKey + '_token', data.token);
+      return data;
+    }
   },
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

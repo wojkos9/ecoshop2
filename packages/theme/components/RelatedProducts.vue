@@ -16,7 +16,6 @@
             :show-add-to-cart-button="true"
             :is-in-wishlist="isInWishlist({ product })"
             :is-added-to-cart="isInCart({ product })"
-            :link="localePath(`/p/${productGetters.getId(product)}/${productGetters.getSlug(product)}`)"
             class="product-card"
             @click:wishlist="!isInWishlist({ product }) ? addItemToWishlist({ product }) : removeProductFromWishlist(product)"
             @click:add-to-cart="addItemToCart({ product, quantity: 1 })"

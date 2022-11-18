@@ -123,7 +123,7 @@ import {
 } from '@storefront-ui/vue';
 import { computed } from '@nuxtjs/composition-api';
 import { useCart, cartGetters } from '@vue-storefront/ecoshop';
-import { useUiState } from '~/composables';
+import { useUiNotification, useUiState } from '~/composables';
 import debounce from 'lodash.debounce';
 import { addBasePath } from '@vue-storefront/core';
 
@@ -142,13 +142,19 @@ export default {
   },
   setup() {
     const { isCartSidebarOpen, toggleCartSidebar } = useUiState();
-    const { cart, removeItem, updateItemQty, loading } = useCart();
+    const { cart, removeItem, updateItemQty, loading, error } = useCart();
     const products = computed(() => cartGetters.getItems(cart.value));
     const totals = computed(() => cartGetters.getTotals(cart.value));
     const totalItems = computed(() => cartGetters.getTotalItems(cart.value));
+    const { send: sendNotification } = useUiNotification();
 
     const updateQuantity = debounce(async ({ product, quantity }) => {
       await updateItemQty({ product, quantity });
+      if (error.value.updateItemQty) {
+        sendNotification({type: "danger", message: error.value.updateItemQty});
+      } else if (cart.value.message) {
+        sendNotification({type: "info", message: cart.value.message});
+      }
     }, 500);
 
     return {

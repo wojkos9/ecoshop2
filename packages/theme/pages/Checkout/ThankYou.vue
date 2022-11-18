@@ -90,7 +90,6 @@ export default {
       city: 'Wroclaw, Poland',
       email: 'demo@vuestorefront.io'
     });
-    console.log("WKD", context);
 
     return {
       addBasePath,

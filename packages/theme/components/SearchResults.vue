@@ -63,7 +63,6 @@
                 :image="addBasePath(productGetters.getCoverImage(product))"
                 :alt="productGetters.getName(product)"
                 :title="productGetters.getName(product)"
-                :link="localePath(`/p/${productGetters.getId(product)}/${productGetters.getSlug(product)}`)"
                 :is-in-wishlist="isInWishlist({ product })"
                 @click:wishlist="!isInWishlist({ product }) ? addItemToWishlist({ product }) : removeProductFromWishlist(product)"
               />
@@ -102,6 +101,7 @@ import {
 import { ref, watch, computed } from '@nuxtjs/composition-api';
 import { useWishlist, wishlistGetters, productGetters, useCart } from '@vue-storefront/ecoshop';
 import { addBasePath } from '@vue-storefront/core';
+import { useUiNotification } from '~/composables';
 
 export default {
   name: 'SearchResults',
@@ -133,7 +133,8 @@ export default {
     const products = computed(() => props.result?.products);
     const categories = computed(() => props.result?.categories);
     const { addItem: addItemToWishlist, isInWishlist, removeItem: removeItemFromWishlist, wishlist } = useWishlist();
-    const { addItem: addItemToCart } = useCart();
+    const { addItem: addItemToCart, error } = useCart();
+    const { send: sendNotification } = useUiNotification();
 
     watch(() => props.visible, (newVal) => {
       isSearchOpen.value = newVal;
@@ -151,12 +152,17 @@ export default {
       removeItemFromWishlist({ product });
     };
 
-    const addToCart = ({ product, quantity }) => {
+    const addToCart = async ({ product, quantity }) => {
       const { id, sku } = product;
-      addItemToCart({
+      await addItemToCart({
         product: { id, sku },
         quantity
       });
+      if (error.value.addItem) {
+        sendNotification({type: "danger", message: "Cannot add to cart"});
+      } else {
+        sendNotification({type: "success", message: "Added to cart"});
+      }
     };
 
     return {
