@@ -12,7 +12,7 @@ const factoryParams: UseMakeOrderFactoryParams<Order> = {
     const appKey = app.$config.appKey;
     const cartId = app.$cookies.get(appKey + '_cart_id');
     const { order, error } = await context.$ecoshop.api.makeOrder({cart: cartId});
-    return { id: order };
+    return { id: order, error };
   }
 };
 

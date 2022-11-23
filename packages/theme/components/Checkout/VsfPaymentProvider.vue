@@ -1,9 +1,5 @@
 <template>
   <div>
-    <p>
-      <b>Please implement vendor-specific VsfPaymentProvider component in the 'components/Checkout' directory</b>
-    </p>
-
     <SfRadio
       v-e2e="'payment-method'"
       v-for="method in shippingMethods"

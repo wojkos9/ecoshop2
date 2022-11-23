@@ -19,7 +19,7 @@
           :key="item"
         >
           <SfMenuItem
-            :label="$t(item)"
+            :label="item"
           />
         </SfListItem>
       </SfList>
@@ -75,7 +75,7 @@ export default {
   data() {
     return {
       aboutUs: ['Who we are', 'Quality in the details', 'Customer Reviews'],
-      departments: ['Women fashion', 'Men fashion', 'Kidswear', 'Home'],
+      departments: ['Fruit', 'Vegatables', 'Tea', 'Coffee', 'Eco sandals'],
       help: ['Customer service', 'Size guide', 'Contact us'],
       paymentsDelivery: ['Purchase terms', 'Guarantee'],
       social: ['facebook', 'pinterest', 'google', 'twitter', 'youtube'],

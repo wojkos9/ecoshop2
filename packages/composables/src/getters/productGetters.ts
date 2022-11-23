@@ -13,7 +13,7 @@ function getName(product: Product): string {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function getSlug(product: Product): string {
-  return 'slug';
+  return product?.id || undefined;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

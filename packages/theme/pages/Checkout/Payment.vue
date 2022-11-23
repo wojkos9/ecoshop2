@@ -21,6 +21,7 @@
         v-for="(product, index) in products"
         :key="index"
         class="table__row"
+        :class="{'table__error': product.error}"
       >
         <SfTableData class="table__image">
           <SfImage :src="addBasePath(cartGetters.getItemImage(product))" :alt="cartGetters.getItemName(product)" />
@@ -28,12 +29,6 @@
         <SfTableData class="table__data table__description table__data">
           <div class="product-title">{{ cartGetters.getItemName(product) }}</div>
           <div class="product-sku">{{ cartGetters.getItemSku(product) }}</div>
-        </SfTableData>
-        <SfTableData
-          class="table__data" v-for="(value, key) in cartGetters.getItemAttributes(product, ['size', 'color'])"
-          :key="key"
-        >
-          {{ value }}
         </SfTableData>
         <SfTableData class="table__data">{{ cartGetters.getItemQty(product) }}</SfTableData>
         <SfTableData class="table__data price">
@@ -105,6 +100,7 @@ import { onSSR } from '@vue-storefront/core';
 import { ref, computed, useRouter } from '@nuxtjs/composition-api';
 import { useMakeOrder, useCart, cartGetters, orderGetters } from '@vue-storefront/ecoshop';
 import { addBasePath } from '@vue-storefront/core';
+import { useUiNotification } from '~/composables';
 
 export default {
   name: 'ReviewOrder',
@@ -126,6 +122,7 @@ export default {
     const router = useRouter();
     const { cart, load, setCart } = useCart();
     const { order, make, loading } = useMakeOrder();
+    const { send: sendNotification } = useUiNotification();
 
     const isPaymentReady = ref(false);
     const terms = ref(false);
@@ -136,6 +133,10 @@ export default {
 
     const processOrder = async () => {
       await make();
+      if (order.value?.error) {
+        sendNotification({type: "danger", "message": "Some products were not available in requested quantity."});
+        return;
+      }
       const thankYouPath = { name: 'thank-you', query: { order: orderGetters.getId(order.value) }};
       router.push(context.root.localePath(thankYouPath));
       setTimeout(() =>
@@ -149,9 +150,9 @@ export default {
       isPaymentReady,
       terms,
       loading,
-      products: computed(() => cartGetters.getItems(cart.value)),
+      products: computed(() => cartGetters.getItems(cart.value).map(i => ({...i, error: !!order.value?.error?.[i.id]}))),
       totals: computed(() => cartGetters.getTotals(cart.value)),
-      tableHeaders: ['Description', 'Size', 'Color', 'Quantity', 'Amount'],
+      tableHeaders: ['Description', 'Quantity', 'Amount'],
       cartGetters,
       processOrder
     };
@@ -167,6 +168,9 @@ export default {
   margin: 0 0 var(--spacer-base) 0;
   &__row {
     justify-content: space-between;
+  }
+  &__error {
+    background: #ec7063
   }
   @include for-desktop {
     &__header {

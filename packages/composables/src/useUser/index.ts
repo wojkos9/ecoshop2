@@ -20,7 +20,12 @@ const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
     const app = context.$ecoshop.config.app;
     const appKey = app.$config.appKey;
     const token = app.$cookies.get(appKey + '_token');
-    const result = await context.$ecoshop.api.fetchCustomer(token);
+    let result;
+    try {
+      result = await context.$ecoshop.api.fetchCustomer(token);
+    } catch (e) {
+      return null;
+    }
     let customer = null;
     if (result) {
         customer = result.customer;
@@ -79,6 +84,9 @@ const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
       password,
       currentCart
     });
+    if (response.error) {
+      throw {message: "Invalid credentials"};
+    }
     if (response.token !== null) {
       app.$cookies.set(appKey + '_token', response.token);
       if (response.cart) {
@@ -91,7 +99,16 @@ const params: UseUserFactoryParams<User, UpdateParams, RegisterParams> = {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   changePassword: async (context: Context, { currentUser, currentPassword, newPassword }) => {
-    console.log('Mocked: useUser.changePassword');
+    const app = context.$ecoshop.config.app;
+    const appKey = app.$config.appKey;
+    const token = app.$cookies.get(appKey + '_token');
+    const data = await context.$ecoshop.api.changePassword(token, {currentPassword, newPassword});
+    const {error} = data;
+    console.log(data)
+    if (error) {
+      console.log("ERROR", error);
+      throw error;
+    }
     return {};
   }
 };

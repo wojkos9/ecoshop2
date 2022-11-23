@@ -121,7 +121,7 @@ export default {
       default: false
     },
     result: {
-      type: Object
+      type: Object | Array
     },
     term: {
       type: String,

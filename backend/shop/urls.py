@@ -13,5 +13,6 @@ urlpatterns = [
     path("user", views.get_user),
     path("makeOrder", views.make_order),
     path("download", views.download),
-    path("userOrders", views.get_orders)
+    path("userOrders", views.get_orders),
+    path("changePassword", views.change_password)
 ]

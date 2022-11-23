@@ -57,7 +57,23 @@ def create_user(q: Request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user(q: Request):
-    return HttpResponse(q.user.username)
+    return JsonResponse({"firstName": q.user.first_name, "lastName": q.user.last_name, "email": q.user.email})
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def change_password(q: Request):
+    old_pass = q.data.get("currentPassword")
+    user: User = q.user
+    if not user.check_password(old_pass):
+        return HttpResponseForbidden("Incorrect current password")
+    new_pass = q.data.get("newPassword")
+    try:
+        validate_password(password=new_pass, user=user)
+    except ValidationError as e:
+        return HttpResponseForbidden(e)
+    user.set_password(new_pass)
+    user.save()
+    return HttpResponse("OK")
 
 @api_view(['GET'])
 def create_cart(q: Request):
@@ -174,14 +190,14 @@ import io
 import zipfile
 @api_view(['GET'])
 def make_order(q: Request):
-    not_in_stock = []
+    not_in_stock = {}
     cart = Cart.objects.filter(id=q.query_params.get("cart")).first()
     items = CartItem.objects.filter(cart=cart).all()
     for it in items:
         if not 0 < it.quantity <= it.product.quantity:
-            not_in_stock.append(it.product.name)
+            not_in_stock[it.product.id] = it.product.quantity
     if not_in_stock:
-        return HttpResponseForbidden(str(not_in_stock))
+        return JsonResponse(not_in_stock, safe=False, status=403)
 
     order = Order.objects.create(owner=cart.owner, amount=0)
     amount = 0
