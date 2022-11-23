@@ -43,7 +43,7 @@
             <ValidationProvider
               v-slot="{ errors }"
               tag="div"
-              rules="required|min:5"
+              rules="required|min:10"
               vid="password"
             >
               <SfInput
@@ -118,8 +118,8 @@ extend('min', {
 });
 
 extend('password', {
-  validate: value => String(value).length >= 8 && String(value).match(/[A-Za-z]/gi) && String(value).match(/[0-9]/gi),
-  message: 'Password must have at least 8 characters including one letter and a number'
+  validate: value => String(value).length >= 10 && String(value).match(/[A-Za-z]/gi) && String(value).match(/[0-9]/gi),
+  message: 'Password must have at least 10 characters including one letter and a number'
 });
 
 extend('confirmed', {

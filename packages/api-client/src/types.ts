@@ -43,6 +43,7 @@ export type OrderItem = TODO;
 export type PasswordResetResult = TODO;
 
 export type Product = {
+    id: string;
     name: string;
     price: number;
     image: string;
@@ -54,7 +55,11 @@ export type Review = TODO;
 
 export type ReviewItem = TODO;
 
-export type User = TODO;
+export type User = {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+};
 
 export type UserBillingAddress = TODO;
 
